@@ -3,28 +3,36 @@ import { AppShell } from '@/components/layout/app-shell'
 export const dynamic = 'force-dynamic'
 import { DashboardView } from '@/components/dashboard/dashboard-view'
 import { getTodaySummary, getTodayMeals, getTodayWater, getTodayExercises, getTodayChecklist, getTodayProteinPowder } from '@/lib/data'
-import { getToday } from '@/lib/date-utils'
+import { getToday, formatDate, addDays, subDays } from '@/lib/date-utils'
 import { initDailyChecklist } from '@/lib/actions'
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
+  const params = await searchParams
   const today = getToday()
+  const date = params.date || today
+  const isToday = date === today
+  const prevDate = formatDate(subDays(new Date(date + 'T00:00:00'), 1))
+  const nextDate = isToday ? null : formatDate(addDays(new Date(date + 'T00:00:00'), 1))
 
-  // Seed checklist items for today (idempotent) — don't crash on failure
-  await initDailyChecklist(today).catch(() => {})
+  // Seed checklist items for today only
+  if (isToday) {
+    await initDailyChecklist(today).catch(() => {})
+  }
 
-  // Fetch all today's data in parallel
   const [summary, meals, water, exercises, checklist, proteinPowder] = await Promise.all([
-    getTodaySummary(today).catch(() => null),
-    getTodayMeals(today).catch(() => []),
-    getTodayWater(today).catch(() => null),
-    getTodayExercises(today).catch(() => []),
-    getTodayChecklist(today).catch(() => []),
-    getTodayProteinPowder(today).catch(() => []),
+    getTodaySummary(date).catch(() => null),
+    getTodayMeals(date).catch(() => []),
+    getTodayWater(date).catch(() => null),
+    getTodayExercises(date).catch(() => []),
+    getTodayChecklist(date).catch(() => []),
+    getTodayProteinPowder(date).catch(() => []),
   ])
 
   return (
-    <AppShell>
+    <AppShell date={date} prevDate={prevDate} nextDate={nextDate} isToday={isToday}>
       <DashboardView
+        date={date}
+        isToday={isToday}
         summary={summary}
         meals={meals}
         water={water}

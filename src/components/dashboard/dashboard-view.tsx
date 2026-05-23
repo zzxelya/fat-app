@@ -10,6 +10,8 @@ import type { DailySummary, Meal, WaterLog, Exercise, DailyChecklistItem, Protei
 import { CheckCircle2, Circle, Dumbbell, GlassWater, FlaskConical } from 'lucide-react'
 
 interface DashboardViewProps {
+  date?: string
+  isToday?: boolean
   summary: DailySummary | null
   meals: Meal[]
   water: WaterLog | null
@@ -19,6 +21,8 @@ interface DashboardViewProps {
 }
 
 export function DashboardView({
+  date,
+  isToday = true,
   summary,
   meals,
   water,
@@ -82,7 +86,7 @@ export function DashboardView({
 
       {/* Meal Cards */}
       <div className="space-y-2">
-        <h3 className="text-sm font-semibold text-muted-foreground px-1">今日饮食</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground px-1">{isToday ? '今日饮食' : '饮食记录'}</h3>
         <div className="space-y-2">
           {MEAL_SLOTS.map((slot) => {
             const meal = meals.find((m) => m.slot === slot.key)
@@ -103,7 +107,7 @@ export function DashboardView({
                           </p>
                         ) : (
                           <span className="text-xs text-muted-foreground/60 mt-0.5">
-                            目标 {slot.targetCal} kcal
+                            {isToday ? `目标 ${slot.targetCal} kcal` : '未记录'}
                           </span>
                         )}
                       </div>
@@ -112,14 +116,14 @@ export function DashboardView({
                       <Badge variant="secondary" className="text-xs">
                         {meal.calories} kcal
                       </Badge>
-                    ) : (
+                    ) : isToday ? (
                       <Link
                         href={`/log/meals?slot=${slot.key}`}
                         className="text-xs font-medium text-primary hover:underline"
                       >
                         记录
                       </Link>
-                    )}
+                    ) : null}
                   </div>
                 </CardContent>
               </Card>
@@ -130,7 +134,7 @@ export function DashboardView({
 
       {/* Exercise Cards */}
       <div className="space-y-2">
-        <h3 className="text-sm font-semibold text-muted-foreground px-1">今日运动</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground px-1">{isToday ? '今日运动' : '运动记录'}</h3>
         {exercises.length > 0 ? (
           <div className="space-y-2">
             {exercises.map((ex) => {
@@ -163,12 +167,14 @@ export function DashboardView({
                   <Dumbbell className="h-4 w-4" />
                   <span className="text-sm">暂无运动记录</span>
                 </div>
-                <Link
-                  href="/log/exercise"
-                  className="text-xs font-medium text-primary hover:underline"
-                >
-                  记录
-                </Link>
+                {isToday && (
+                  <Link
+                    href="/log/exercise"
+                    className="text-xs font-medium text-primary hover:underline"
+                  >
+                    记录
+                  </Link>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -180,45 +186,72 @@ export function DashboardView({
         {/* Checklist Mini */}
         <Card size="sm">
           <CardContent>
-            <Link href="/checklist" className="block">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-muted-foreground">每日清单</span>
-                <span className="text-xs font-bold text-primary">
-                  {completedChecklist}/{totalChecklist}
-                </span>
+            {isToday ? (
+              <Link href="/checklist" className="block">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-muted-foreground">每日清单</span>
+                  <span className="text-xs font-bold text-primary">
+                    {completedChecklist}/{totalChecklist}
+                  </span>
+                </div>
+                <div className="flex gap-1">
+                  {checklist.map((item) =>
+                    item.completed ? (
+                      <CheckCircle2 key={item.item_key} className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Circle key={item.item_key} className="h-4 w-4 text-muted-foreground/40" />
+                    )
+                  )}
+                </div>
+              </Link>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-muted-foreground">每日清单</span>
+                  <span className="text-xs font-bold text-primary">
+                    {completedChecklist}/{totalChecklist}
+                  </span>
+                </div>
+                <div className="flex gap-1">
+                  {checklist.map((item) =>
+                    item.completed ? (
+                      <CheckCircle2 key={item.item_key} className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Circle key={item.item_key} className="h-4 w-4 text-muted-foreground/40" />
+                    )
+                  )}
+                </div>
               </div>
-              <div className="flex gap-1">
-                {checklist.map((item) =>
-                  item.completed ? (
-                    <CheckCircle2
-                      key={item.item_key}
-                      className="h-4 w-4 text-primary"
-                    />
-                  ) : (
-                    <Circle
-                      key={item.item_key}
-                      className="h-4 w-4 text-muted-foreground/40"
-                    />
-                  )
-                )}
-              </div>
-            </Link>
+            )}
           </CardContent>
         </Card>
 
         {/* Protein Powder */}
         <Card size="sm">
           <CardContent>
-            <Link href="/log/protein" className="block">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-muted-foreground">蛋白粉</span>
-                <FlaskConical className="h-4 w-4 text-muted-foreground" />
+            {isToday ? (
+              <Link href="/log/protein" className="block">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-muted-foreground">蛋白粉</span>
+                  <FlaskConical className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="text-lg font-bold">
+                  {totalScoops}
+                  <span className="text-xs font-normal text-muted-foreground ml-1">勺</span>
+                </div>
+              </Link>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-muted-foreground">蛋白粉</span>
+                  <FlaskConical className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="text-lg font-bold">
+                  {totalScoops}
+                  <span className="text-xs font-normal text-muted-foreground ml-1">勺</span>
+                </div>
               </div>
-              <div className="text-lg font-bold">
-                {totalScoops}
-                <span className="text-xs font-normal text-muted-foreground ml-1">勺</span>
-              </div>
-            </Link>
+            )}
           </CardContent>
         </Card>
       </div>

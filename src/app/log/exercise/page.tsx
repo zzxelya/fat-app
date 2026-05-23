@@ -36,7 +36,7 @@ export default function ExercisePage() {
     const result = await logExercise(getToday(), type, duration, caloriesBurned, note || undefined)
     if (result.success) {
       toast.success(`运动已记录，消耗 ${caloriesBurned} kcal`)
-      router.push('/')
+      setTimeout(() => { router.push('/'); router.refresh() }, 500)
     } else {
       toast.error(result.error || '记录失败')
       setLoading(false)

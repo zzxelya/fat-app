@@ -27,7 +27,7 @@ export default function BeveragePage() {
     const result = await logBeverage(getToday(), name, category, calories)
     if (result.success) {
       toast.success(`${name} 已记录`)
-      router.push('/')
+      setTimeout(() => { router.push('/'); router.refresh() }, 500)
     } else {
       toast.error(result.error || '记录失败')
       setLoading(false)
