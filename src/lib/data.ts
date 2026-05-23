@@ -131,3 +131,34 @@ export async function getExerciseHistory(days: number = 30) {
     .limit(days * 5)
   return data ?? []
 }
+
+export async function getProgressData(date: string) {
+  const supabase = await getSupabaseServer()
+
+  const [todaySummary, yesterdaySummary, todayWater, yesterdayWater, todayWeight, yesterdayWeight, allWeights, allSummaries] = await Promise.all([
+    supabase.from('daily_summaries').select('*').eq('date', date).single(),
+    supabase.from('daily_summaries').select('*').gt('date', '2020-01-01').lt('date', date).order('date', { ascending: false }).limit(1).single(),
+    supabase.from('water_logs').select('ml').eq('date', date).single(),
+    supabase.from('water_logs').select('ml').gt('date', '2020-01-01').lt('date', date).order('date', { ascending: false }).limit(1).single(),
+    supabase.from('weight_logs').select('weight_kg').eq('date', date).single(),
+    supabase.from('weight_logs').select('weight_kg, date').gt('date', '2020-01-01').lt('date', date).order('date', { ascending: false }).limit(1).single(),
+    supabase.from('weight_logs').select('date, weight_kg').order('date', { ascending: true }),
+    supabase.from('daily_summaries').select('date, total_calories, net_calories, total_protein_g, total_fat_g, total_carbs_g, exercise_calories').order('date', { ascending: true }),
+  ])
+
+  return {
+    today: {
+      summary: todaySummary.data,
+      water: todayWater.data?.ml ?? 0,
+      weight: todayWeight.data?.weight_kg ?? null,
+    },
+    yesterday: {
+      summary: yesterdaySummary.data,
+      water: yesterdayWater.data?.ml ?? 0,
+      weight: yesterdayWeight.data?.weight_kg ?? null,
+      date: yesterdayWeight.data?.date ?? null,
+    },
+    weightHistory: allWeights.data ?? [],
+    summaryHistory: allSummaries.data ?? [],
+  }
+}

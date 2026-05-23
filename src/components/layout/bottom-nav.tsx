@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, PlusCircle, BarChart3, Menu } from 'lucide-react'
+import { Home, PlusCircle, BarChart3, Menu, TrendingUp } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
@@ -16,6 +16,7 @@ import {
 const mainNavItems = [
   { href: '/', label: '今日', icon: Home },
   { href: '/log', label: '记录', icon: PlusCircle },
+  { href: '/progress', label: '变化', icon: TrendingUp },
   { href: '/stats', label: '图表', icon: BarChart3 },
 ]
 
