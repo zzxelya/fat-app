@@ -27,8 +27,8 @@ export default function LoginPage() {
       } else {
         setError(data.error || '密码错误')
       }
-    } catch {
-      setError('网络错误，请重试')
+    } catch (err) {
+      setError('网络错误: ' + (err instanceof Error ? err.message : '请检查环境变量'))
     } finally {
       setLoading(false)
     }
