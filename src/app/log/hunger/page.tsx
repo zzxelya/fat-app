@@ -42,7 +42,7 @@ export default function HungerPage() {
     const result = await logHunger(getToday(), time, severity, actionTaken, note || undefined)
     if (result.success) {
       toast.success('饥饿事件已记录')
-      setTimeout(() => { router.push('/'); router.refresh() }, 500)
+      setTimeout(() => { router.push('/progress'); router.refresh() }, 500)
     } else {
       toast.error(result.error || '记录失败')
       setLoading(false)

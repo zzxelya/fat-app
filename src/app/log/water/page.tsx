@@ -132,9 +132,9 @@ export default function WaterPage() {
             <Button
               variant="ghost"
               className="w-full"
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/progress')}
             >
-              返回首页
+              返回
             </Button>
           </CardContent>
         </Card>

@@ -34,7 +34,7 @@ export default function ProteinPage() {
     const result = await logProteinPowder(getToday(), slot, scoops)
     if (result.success) {
       toast.success(`蛋白粉已记录：${scoops}勺 (${totalProtein}g蛋白质)`)
-      setTimeout(() => { router.push('/'); router.refresh() }, 500)
+      setTimeout(() => { router.push('/progress'); router.refresh() }, 500)
     } else {
       toast.error(result.error || '记录失败')
       setLoading(false)

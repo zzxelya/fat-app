@@ -27,7 +27,7 @@ export default function BeveragePage() {
     const result = await logBeverage(getToday(), name, category, calories)
     if (result.success) {
       toast.success(`${name} 已记录`)
-      setTimeout(() => { router.push('/'); router.refresh() }, 500)
+      setTimeout(() => { router.push('/progress'); router.refresh() }, 500)
     } else {
       toast.error(result.error || '记录失败')
       setLoading(false)
@@ -44,7 +44,7 @@ export default function BeveragePage() {
     const result = await logBeverage(getToday(), customName.trim(), 'controlled', customCalories)
     if (result.success) {
       toast.success(`${customName} 已记录`)
-      router.push('/')
+      setTimeout(() => { router.push('/progress'); router.refresh() }, 500)
     } else {
       toast.error(result.error || '记录失败')
       setLoading(false)

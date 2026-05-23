@@ -75,7 +75,7 @@ function MealsContent() {
     )
     if (result.success) {
       toast.success('饮食已记录')
-      setTimeout(() => { router.push('/'); router.refresh() }, 500)
+      setTimeout(() => { router.push('/progress'); router.refresh() }, 500)
     } else {
       toast.error(result.error || '记录失败')
       setLoading(false)
