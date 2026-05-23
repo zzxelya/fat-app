@@ -9,17 +9,17 @@ import { initDailyChecklist } from '@/lib/actions'
 export default async function HomePage() {
   const today = getToday()
 
-  // Seed checklist items for today (idempotent)
-  await initDailyChecklist(today)
+  // Seed checklist items for today (idempotent) — don't crash on failure
+  await initDailyChecklist(today).catch(() => {})
 
   // Fetch all today's data in parallel
   const [summary, meals, water, exercises, checklist, proteinPowder] = await Promise.all([
-    getTodaySummary(today),
-    getTodayMeals(today),
-    getTodayWater(today),
-    getTodayExercises(today),
-    getTodayChecklist(today),
-    getTodayProteinPowder(today),
+    getTodaySummary(today).catch(() => null),
+    getTodayMeals(today).catch(() => []),
+    getTodayWater(today).catch(() => null),
+    getTodayExercises(today).catch(() => []),
+    getTodayChecklist(today).catch(() => []),
+    getTodayProteinPowder(today).catch(() => []),
   ])
 
   return (
